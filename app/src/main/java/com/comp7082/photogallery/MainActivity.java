@@ -63,7 +63,13 @@ public class MainActivity extends AppCompatActivity {
         return photos;
     }
 
+    public void searchPhotos(View v) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
     public void scrollPhotos(View v) {
+        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
         switch (v.getId()) {
             case R.id.btnPrev:
                 if (index > 0) {

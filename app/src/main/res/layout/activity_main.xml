@@ -60,8 +60,12 @@
 
     <Button
         android:id="@+id/btnSearch"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/ivGallery" android:layout_alignParentBottom="true"
-        android:layout_marginBottom="18dp" android:text="search"
-        tools:layout_editor_absoluteX="291dp" tools:layout_editor_absoluteY="635dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/ivGallery"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="18dp"
+        android:text="search" android:onClick="searchPhotos"
+        tools:layout_editor_absoluteX="291dp"
+        tools:layout_editor_absoluteY="635dp" />
 </RelativeLayout>
