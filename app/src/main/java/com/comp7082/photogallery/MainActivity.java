@@ -3,7 +3,9 @@ package com.comp7082.photogallery;
 import androidx.appcompat.app.AppCompatActivity; import androidx.core.content.FileProvider;
 import android.content.Intent; import android.graphics.BitmapFactory;
 import android.net.Uri; import android.os.Bundle; import android.os.Environment;
-import android.provider.MediaStore; import android.view.View; import android.widget.EditText;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View; import android.widget.EditText;
 import android.widget.ImageView; import android.widget.TextView; import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -12,7 +14,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int SEARCH_ACTIVITY_REQUEST_CODE = -1;
+    private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
     String mCurrentPhotoPath;
     private ArrayList<String> photos = null;
     private int index = 0;
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void searchPhotos(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
     public void scrollPhotos(View v) {
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String keywords = (String) data.getStringExtra("KEYWORDS");
                 index = 0;
+
                 photos = findPhotos(startTimestamp, endTimestamp, keywords);
                 if (photos.size() == 0) {
                     displayPhoto(null);
