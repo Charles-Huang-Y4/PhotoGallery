@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View; import android.widget.EditText;
 import android.widget.ImageView; import android.widget.TextView; import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat; import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void scrollPhotos(View v) {
-        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
+        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString(), index);
         switch (v.getId()) {
             case R.id.btnPrev:
                 if (index > 0) {
@@ -80,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btnNext:
                 if (index < (photos.size() - 1)) {
-                index++;
-            }
-            break;
+                    index++;
+                }
+                break;
             default:
                 break;
         }
@@ -93,13 +94,14 @@ public class MainActivity extends AppCompatActivity {
         ImageView iv = (ImageView) findViewById(R.id.ivGallery);
         TextView tv = (TextView) findViewById(R.id.tvTimestamp);
         EditText et = (EditText) findViewById(R.id.etCaption);
-        if (path == null || path == "") {
+        if (path == null || path.equals("")) {
             iv.setImageResource(R.mipmap.ic_launcher);
             et.setText("");
             tv.setText("");
         } else {
             iv.setImageBitmap(BitmapFactory.decodeFile(path));
             String[] attr = path.split("_");
+            Log.e("HELP", attr[0]);
             et.setText(attr[1]);
             tv.setText(attr[2]);
         }
@@ -144,17 +146,29 @@ public class MainActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
+            Log.d("HELP", mCurrentPhotoPath);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
+//            try {
+//                mImageView.setImageBitmap(BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(mCurrentPhotoPath))));
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
+            displayPhoto(photos.get(index));
         }
     }
 
-    private void updatePhoto(String path, String caption) {
+    private void updatePhoto(String path, String caption, int i) {
+
         String[] attr = path.split("_");
         if (attr.length >= 3) {
-            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_");
+            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_";
+            File to = new File(newName);
             File from = new File(path);
-            from.renameTo(to);
+             if (from.renameTo(to)) {
+                 photos.set(i, newName);
+             }
+
         }
     }
 }
