@@ -1,12 +1,28 @@
 package com.comp7082.photogallery;
 
-import androidx.appcompat.app.AppCompatActivity; import androidx.core.content.FileProvider;
-import android.content.Intent; import android.graphics.BitmapFactory;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri; import android.os.Bundle; import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View; import android.widget.EditText;
-import android.widget.ImageView; import android.widget.TextView; import java.io.File;
+import android.widget.ImageView; import android.widget.TextView;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -19,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     private ArrayList<String> photos = null;
     private int index = 0;
+    private FusedLocationProviderClient fusedLocationClient;
+    private final int locationRequestCode = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             displayPhoto(photos.get(index));
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     public void takePhoto(View v) {
@@ -101,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             iv.setImageBitmap(BitmapFactory.decodeFile(path));
             String[] attr = path.split("_");
-            Log.e("HELP", attr[0]);
             et.setText(attr[1]);
             tv.setText(attr[2]);
         }
@@ -146,13 +164,13 @@ public class MainActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
-            Log.d("HELP", mCurrentPhotoPath);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
 //            try {
 //                mImageView.setImageBitmap(BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(mCurrentPhotoPath))));
 //            } catch (FileNotFoundException e) {
 //                e.printStackTrace();
 //            }
+            getLocation();
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
@@ -170,5 +188,49 @@ public class MainActivity extends AppCompatActivity {
              }
 
         }
+    }
+
+    public void getLocation() {
+        ActivityResultLauncher<String[]> locationPermissionRequest =
+                registerForActivityResult(new ActivityResultContracts
+                                .RequestMultiplePermissions(), result -> {
+                            Boolean fineLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            Boolean coarseLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,false);
+                            if (fineLocationGranted != null && fineLocationGranted) {
+                                // Precise location access granted.
+                                Log.e("tag", "precise location access granted");
+                            } else {
+                                Log.e("tag", "no precise location access granted");
+                            }
+
+                            if (coarseLocationGranted != null && coarseLocationGranted) {
+                                // Only approximate location access granted.
+                                Log.e("tag", "apprx location access granted");
+                            } else {
+                                // No location access granted.
+                                Log.e("tag", "no apprx location access granted");
+                            }
+                        }
+                );
+        locationPermissionRequest.launch(new String[] {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
+        Log.e("permission", String.valueOf(PackageManager.PERMISSION_GRANTED));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        Log.e("tag",location.toString());
+                    } else {
+                        Log.e("tag","tis null");
+                    }
+                });
     }
 }
