@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private int index = 0;
     private FusedLocationProviderClient fusedLocationClient;
     private final int locationRequestCode = 1000;
+    private double locLatitude;
+    private double locLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,12 +177,9 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
-//            try {
-//                mImageView.setImageBitmap(BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(mCurrentPhotoPath))));
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
+
             getLocation();
+
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
@@ -198,16 +197,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
+    /**
+     * Get the user's location. If permission is not granted initially, try requesting it.
+     */
+    private void getLocation() {
+        // Permissions denied
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permissions
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
+
+        // Get location
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
+                        locLatitude = location.getLatitude();
+                        locLongitude = location.getLongitude();
 
+                        Log.e("location", "Lat: " + locLatitude + ", Long: " + locLongitude);
                     } else {
                         Log.e("Location Null Error", "Location not found.");
                     }
