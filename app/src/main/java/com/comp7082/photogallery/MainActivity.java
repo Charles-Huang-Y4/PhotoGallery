@@ -1,5 +1,15 @@
 package com.comp7082.photogallery;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri; import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +31,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,6 +41,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     private ArrayList<String> photos = null;
     private int index = 0;
+    private Uri photoURI;
     private FusedLocationProviderClient fusedLocationClient;
     private final int locationRequestCode = 1000;
     private double locLatitude;
@@ -74,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this, "com.comp7082.photogallery.fileprovider", photoFile);
+                photoURI = FileProvider.getUriForFile(this, "com.comp7082.photogallery.fileprovider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -224,5 +234,61 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("Location Null Error", "Location not found.");
                     }
                 });
+    }
+
+    public void sharePhotos(View view) {
+        // remove restrictions
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
+        // This works for other things outside of facebook
+//        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+//        shareIntent.setType("image/*");
+//        Log.e("Photo", photos.get(index));
+//        File photoFile = new File(photos.get(index));
+//        // Log.e("Photo File", photoFile.toString());
+//        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(photoFile));
+//        startActivity(Intent.createChooser(shareIntent, "Share images..."));
+
+        // test
+        ImageView ivImage = (ImageView) findViewById(R.id.ivGallery);
+        // Get access to the URI for the bitmap
+        ivImage.buildDrawingCache();
+        Bitmap bitmap = ivImage.getDrawingCache();
+        Uri bmpUri = getBitmapFromDrawable(bitmap);
+        if (bmpUri != null) {
+            // Construct a ShareIntent with link to image
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            shareIntent.setType("image/*");
+            // Launch sharing dialog for image
+            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        } else {
+            Log.e("Failure", "Attempt to share photo failed.");
+        }
+    }
+
+    // Method when launching drawable within Glide
+    public Uri getBitmapFromDrawable(Bitmap bmp){
+
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            // Use methods on Context to access package-specific directories on external storage.
+            // This way, you don't need to request external read/write permission.
+            // See https://youtu.be/5xVh-7ywKpE?t=25m25s
+            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+
+            bmpUri = Uri.fromFile(file);
+            // **Note:** For API < 24, you may use bmpUri = Uri.fromFile(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 }
