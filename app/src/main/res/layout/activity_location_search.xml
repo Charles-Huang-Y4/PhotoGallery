@@ -37,7 +37,7 @@
         android:layout_marginStart="28dp"
         android:layout_marginTop="61dp"
         android:ems="10"
-        android:inputType="number"
+        android:inputType="numberDecimal|numberSigned"
         app:layout_constraintStart_toEndOf="@+id/tvLatitude"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,7 +48,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="21dp"
         android:ems="10"
-        android:inputType="number"
+        android:inputType="numberDecimal|numberSigned"
         app:layout_constraintStart_toEndOf="@+id/tvLongitude"
         app:layout_constraintTop_toBottomOf="@+id/etLatitude" />
 

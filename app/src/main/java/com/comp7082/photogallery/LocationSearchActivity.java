@@ -30,6 +30,7 @@ public class LocationSearchActivity extends AppCompatActivity {
         Intent i = new Intent();
         EditText lat = (EditText) findViewById(R.id.etLatitude);
         EditText lng = (EditText) findViewById(R.id.etLongitude);
+        //lat.setInputType();
 
         i.putExtra("Latitude", lat.getText() != null ? lat.getText().toString() : "");
         i.putExtra("Longitude", lng.getText() != null ? lng.getText().toString() : "");

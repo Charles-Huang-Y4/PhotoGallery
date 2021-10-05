@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> photos = null;
     private int index = 0;
     private FusedLocationProviderClient fusedLocationClient;
-    private final int locationRequestCode = 1000;
     private double locLatitude;
     private double locLongitude;
 
@@ -161,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "_caption_" + timeStamp + "_";
+        String imageFileName = "_caption_" + timeStamp + "_" + locLatitude + "_" + locLongitude;
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -171,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        getLocation();
         // Search by Keyword Activity Result
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -200,8 +200,6 @@ public class MainActivity extends AppCompatActivity {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
 
-            getLocation();
-
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
@@ -216,13 +214,15 @@ public class MainActivity extends AppCompatActivity {
                     locLatitude = Double.parseDouble(lat);
                     locLongitude = Double.parseDouble(lng);
 
-                    Log.i("lat/long", "Lat: " + locLatitude + ", Long: " + locLongitude);
+
+
+
                 } catch (Exception e) {
                     Log.e("ParseError", "Could not parse Location Info");
                 }
 
                 // Find photos that match lat/long
-
+                findPhotosByLoc(locLatitude, locLongitude);
                 // Display photos
 
             }
@@ -362,8 +362,14 @@ public class MainActivity extends AppCompatActivity {
                 // Check if photo's stored lat/long match the inputted lat/long
                 // if ((lat == null && lng == null) || (f.getLatitudeSomehow() == lat && f.getLongitudeSomehow == lng))
                 // i.e. if nothing matches, get all photos; OR get the photos that match BOTH lat && long
-                if (lat == null && lng == null)
+                if (lat == null && lng == null
+                        || lat != null && lng != null && f.getPath().contains(lat.toString())
+                        && f.getPath().contains(lat.toString()))
+                {
+                    Log.e("loc",f.getPath());
                     photos.add(f.getPath());
+                }
+
             }
         }
         return photos;
