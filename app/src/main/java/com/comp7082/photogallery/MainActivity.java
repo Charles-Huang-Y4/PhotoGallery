@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> photos = null;
     private int index = 0;
     private FusedLocationProviderClient fusedLocationClient;
-    private double locLatitude;
-    private double locLongitude;
+    private String locLatitude;
+    private String locLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +122,14 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
+    /**
+     * Called when Next or Prev buttons are clicked.
+     * @param v the view
+     */
     public void scrollPhotos(View v) {
+        if (photos.size() == 0)
+            return;
+
         updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString(), index);
         switch (v.getId()) {
             case R.id.btnPrev:
@@ -132,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btnNext:
                 if (index < (photos.size() - 1)) {
-                    index++;
+                        index++;
                 }
                 break;
             default:
@@ -160,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        if (locLatitude == null || locLongitude == null)
+            getLocation();
         String imageFileName = "_caption_" + timeStamp + "_" + locLatitude + "_" + locLongitude;
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -170,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getLocation();
         // Search by Keyword Activity Result
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -196,35 +205,38 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        // Take photo
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
 
+            getLocation(); // Get location of where photo was taken
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
 
+        // Search photos by location activity Result
         if (requestCode == LOCATION_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Get Extras and Parse
                 try {
-                    String lat = (String) data.getStringExtra("Latitude");
-                    String lng = (String) data.getStringExtra("Longitude");
-
-                    locLatitude = Double.parseDouble(lat);
-                    locLongitude = Double.parseDouble(lng);
-
-
-
-
+                    locLatitude = data.getStringExtra("Latitude");
+                    locLongitude = data.getStringExtra("Longitude");
                 } catch (Exception e) {
                     Log.e("ParseError", "Could not parse Location Info");
+                    e.printStackTrace();
                 }
-
+                index = 0;
                 // Find photos that match lat/long
-                findPhotosByLoc(locLatitude, locLongitude);
-                // Display photos
+                photos = findPhotosByLoc(locLatitude, locLongitude);
 
+                // Display photos
+                if (photos.size() == 0) {
+                    displayPhoto(null);
+                } else {
+                    displayPhoto(photos.get(index));
+                }
             }
         }
     }
@@ -237,8 +249,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void updatePhoto(String path, String caption, int i) {
         String[] attr = path.split("_");
+
         if (attr.length >= 3) {
-            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_";
+            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" +
+                    attr[4] + "_" + attr[5];
             File to = new File(newName);
             File from = new File(path);
             if (from.renameTo(to)) {
@@ -266,10 +280,13 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, location -> {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
-                        locLatitude = location.getLatitude();
-                        locLongitude = location.getLongitude();
+                        try {
+                            locLatitude = String.valueOf(location.getLatitude());
+                            locLongitude = String.valueOf(location.getLongitude());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-                        Log.e("location", "Lat: " + locLatitude + ", Long: " + locLongitude);
                     } else {
                         Log.e("Location Null Error", "Location not found.");
                     }
@@ -351,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
      * @param lng longitude of photo
      * @return list of photos that match, or all photos if not
      */
-    private ArrayList<String> findPhotosByLoc(Double lat, Double lng) {
+    private ArrayList<String> findPhotosByLoc(String lat, String lng) {
         File file = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), "/Android/data/com.comp7082.photogallery/files/Pictures");
         ArrayList<String> photos = new ArrayList<String>();
@@ -360,11 +377,8 @@ public class MainActivity extends AppCompatActivity {
         if (fList != null) {
             for (File f : fList) {
                 // Check if photo's stored lat/long match the inputted lat/long
-                // if ((lat == null && lng == null) || (f.getLatitudeSomehow() == lat && f.getLongitudeSomehow == lng))
-                // i.e. if nothing matches, get all photos; OR get the photos that match BOTH lat && long
-                if (lat == null && lng == null
-                        || lat != null && lng != null && f.getPath().contains(lat.toString())
-                        && f.getPath().contains(lat.toString()))
+                if ((lat == null && lng == null)
+                        || ((lat != null && lng != null) && f.getPath().contains(lat) && f.getPath().contains(lng)))
                 {
                     Log.e("loc",f.getPath());
                     photos.add(f.getPath());
