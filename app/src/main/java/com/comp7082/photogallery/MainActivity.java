@@ -211,23 +211,6 @@ public class MainActivity extends AppCompatActivity {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
 
-/*            try {
-                Log.e("Path211: ", mCurrentPhotoPath);
-                exif = new ExifInterface(mCurrentPhotoPath);
-            } catch (IOException e) {
-                Log.e("Exif Error","Exif Interface Exception in createImageFile");
-                e.printStackTrace();
-            }*/
-
-/*            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, locLatitude);
-            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, locLongitude);
-
-            try {
-                exif.saveAttributes();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
@@ -246,8 +229,14 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 // Find photos that match lat/long
-                findPhotosByLoc(lat, lng);
+                photos = findPhotosByLoc(lat, lng);
+
                 // Display photos
+                if (photos.size() == 0) {
+                    displayPhoto(null);
+                } else {
+                    displayPhoto(photos.get(index));
+                }
             }
         }
     }
@@ -261,9 +250,9 @@ public class MainActivity extends AppCompatActivity {
     private void updatePhoto(String path, String caption, int i) {
         String[] attr = path.split("_");
 
-        Log.e("attr", Arrays.toString(attr));
         if (attr.length >= 3) {
-            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + locLatitude + "_" + locLongitude + "_";
+            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" +
+                    attr[4] + "_" + attr[5] + "_";
             File to = new File(newName);
             File from = new File(path);
             if (from.renameTo(to)) {
@@ -276,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
      * Get the user's location. If permission is not granted initially, try requesting it.
      */
     private void getLocation() {
+        Log.e("getLocation", "ran");
         // Permissions denied
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -294,16 +284,11 @@ public class MainActivity extends AppCompatActivity {
                         locLatitude = String.valueOf(location.getLatitude());
                         locLongitude = String.valueOf(location.getLongitude());
 
-/*                        File to = new File(mCurrentPhotoPath);
-                        File from = new File("from.mp4");
-                        from.renameTo(to);*/
-                        Log.e("get loc", locLatitude);
-                        Log.e("get loc", locLongitude);
-
                         String[] attr = mCurrentPhotoPath.split("_");
                         Log.e("attr", Arrays.toString(attr));
                         if (attr.length >= 3) {
-                            String newName = attr[0] + "_" + attr[1] + "_" + attr[2] + "_" + attr[3] + "_" + locLatitude + "_" + locLongitude;
+                            String newName = attr[0] + "_" + attr[1] + "_" + attr[2] + "_" + attr[3] +
+                                    "_" + locLatitude + "_" + locLongitude + "_";
                             File to = new File(newName);
                             File from = new File(mCurrentPhotoPath);
                             from.renameTo(to);
@@ -395,35 +380,20 @@ public class MainActivity extends AppCompatActivity {
                 .getAbsolutePath(), "/Android/data/com.comp7082.photogallery/files/Pictures");
         ArrayList<String> photos = new ArrayList<String>();
         File[] fList = file.listFiles();
-        Log.e("location", "Lat: " + locLatitude + ", Long: " + locLongitude);
+
+        Log.e("photoByLoc lat param", lat);
+        Log.e("photoByLoc lng param", lng);
         if (fList != null) {
             for (File f : fList) {
-/*                try {
-                    Log.e("Path395: ",f.getAbsolutePath());
-                    exif = new ExifInterface(f.getAbsolutePath());
-                } catch (IOException e) {
-                    Log.e("Exif Error","Exif Interface Exception in findPhotoByLoc()");
-                    e.printStackTrace();
-                }*/
 
-/*                String exifLat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                String exifLng = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-                Log.e("Check Exif",exif.toString());*/
-                //Log.e("Check Exif",exifLng);
-                // Check if photo's stored lat/long match the inputted lat/long
+                String[] attr = f.getAbsolutePath().split("_");
 
-                // if ((lat == null && lng == null) || (f.getLatitudeSomehow() == lat && f.getLongitudeSomehow == lng))
-                // i.e. if nothing matches, get all photos; OR get the photos that match BOTH lat && long
-/*                if (lat == null && lng == null
-                        || lat != null && lng != null && lat.equals(exifLat) && lng.equals(exifLng))
-
-                if ((lat == null && lng == null)
-                        || ((lat != null && lng != null) && f.getPath().contains(lat) && f.getPath().contains(lng)))
-
-                {
+                Log.e("photoByLoc attr4", attr[4]);
+                Log.e("photoByLoc attr5", attr[5]);
+                if (((!lat.equals("lat") && !lng.equals("lng")) && lat.equals(attr[4]) && lng.equals(attr[5]))) {
                     Log.e("loc",f.getPath());
                     photos.add(f.getPath());
-                }*/
+                }
             }
         }
         return photos;
