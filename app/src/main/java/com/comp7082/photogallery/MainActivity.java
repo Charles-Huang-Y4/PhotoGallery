@@ -1,22 +1,51 @@
 package com.comp7082.photogallery;
 
-import androidx.appcompat.app.AppCompatActivity; import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri; import android.os.Bundle; import android.os.Environment;
+import android.net.Uri; import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View; import android.widget.EditText;
-import android.widget.ImageView; import android.widget.TextView; import java.io.File;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat; import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> photos = null;
     private int index = 0;
     private Uri photoURI;
+    private FusedLocationProviderClient fusedLocationClient;
+    private final int locationRequestCode = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             displayPhoto(photos.get(index));
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     public void takePhoto(View v) {
@@ -108,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             iv.setImageBitmap(BitmapFactory.decodeFile(path));
             String[] attr = path.split("_");
-            Log.e("HELP", attr[0]);
             et.setText(attr[1]);
             tv.setText(attr[2]);
         }
@@ -119,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "_caption_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg",storageDir);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
@@ -130,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date startTimestamp , endTimestamp;
+                Date startTimestamp, endTimestamp;
                 try {
                     String from = (String) data.getStringExtra("STARTTIMESTAMP");
                     String to = (String) data.getStringExtra("ENDTIMESTAMP");
@@ -153,30 +184,44 @@ public class MainActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
-            Log.d("HELP", mCurrentPhotoPath);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
 //            try {
 //                mImageView.setImageBitmap(BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(mCurrentPhotoPath))));
 //            } catch (FileNotFoundException e) {
 //                e.printStackTrace();
 //            }
+            getLocation();
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
     }
 
     private void updatePhoto(String path, String caption, int i) {
-
         String[] attr = path.split("_");
         if (attr.length >= 3) {
             String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_";
             File to = new File(newName);
             File from = new File(path);
-             if (from.renameTo(to)) {
-                 photos.set(i, newName);
-             }
-
+            if (from.renameTo(to)) {
+                photos.set(i, newName);
+            }
         }
+    }
+
+    public void getLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+
+                    } else {
+                        Log.e("Location Null Error", "Location not found.");
+                    }
+                });
     }
 
     public void sharePhotos(View view) {
