@@ -228,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("ParseError", "Could not parse Location Info");
                     e.printStackTrace();
                 }
+                index = 0;
                 // Find photos that match lat/long
                 photos = findPhotosByLoc(lat, lng);
 
@@ -265,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
      * Get the user's location. If permission is not granted initially, try requesting it.
      */
     private void getLocation() {
-        Log.e("getLocation", "ran");
         // Permissions denied
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -285,14 +285,12 @@ public class MainActivity extends AppCompatActivity {
                         locLongitude = String.valueOf(location.getLongitude());
 
                         String[] attr = mCurrentPhotoPath.split("_");
-                        Log.e("attr", Arrays.toString(attr));
                         if (attr.length >= 3) {
                             String newName = attr[0] + "_" + attr[1] + "_" + attr[2] + "_" + attr[3] +
                                     "_" + locLatitude + "_" + locLongitude + "_";
                             File to = new File(newName);
                             File from = new File(mCurrentPhotoPath);
                             from.renameTo(to);
-                            Log.e("new name", newName);
                         }
                     } else {
                         Log.e("Location Null Error", "Location not found.");
@@ -304,15 +302,6 @@ public class MainActivity extends AppCompatActivity {
         // remove restrictions
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-
-        // This works for other things outside of facebook
-//        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//        shareIntent.setType("image/*");
-//        Log.e("Photo", photos.get(index));
-//        File photoFile = new File(photos.get(index));
-//        // Log.e("Photo File", photoFile.toString());
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(photoFile));
-//        startActivity(Intent.createChooser(shareIntent, "Share images..."));
 
         // test
         ImageView ivImage = (ImageView) findViewById(R.id.ivGallery);
@@ -381,17 +370,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> photos = new ArrayList<String>();
         File[] fList = file.listFiles();
 
-        Log.e("photoByLoc lat param", lat);
-        Log.e("photoByLoc lng param", lng);
         if (fList != null) {
             for (File f : fList) {
 
                 String[] attr = f.getAbsolutePath().split("_");
-
-                Log.e("photoByLoc attr4", attr[4]);
-                Log.e("photoByLoc attr5", attr[5]);
                 if (((!lat.equals("lat") && !lng.equals("lng")) && lat.equals(attr[4]) && lng.equals(attr[5]))) {
-                    Log.e("loc",f.getPath());
                     photos.add(f.getPath());
                 }
             }
