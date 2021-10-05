@@ -91,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Find photos that match the date or keywords.
+     * @param startTimestamp start
+     * @param endTimestamp end
+     * @param keywords caption
+     * @return list of photos
+     */
     private ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), "/Android/data/com.comp7082.photogallery/files/Pictures");
@@ -164,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // Search by Keyword Activity Result
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -200,7 +208,23 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == LOCATION_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // display the photos that match the location???
+                // Get Extras and Parse
+                try {
+                    String lat = (String) data.getStringExtra("Latitude");
+                    String lng = (String) data.getStringExtra("Longitude");
+
+                    locLatitude = Double.parseDouble(lat);
+                    locLongitude = Double.parseDouble(lng);
+
+                    Log.i("lat/long", "Lat: " + locLatitude + ", Long: " + locLongitude);
+                } catch (Exception e) {
+                    Log.e("ParseError", "Could not parse Location Info");
+                }
+
+                // Find photos that match lat/long
+
+                // Display photos
+
             }
         }
     }
@@ -319,5 +343,29 @@ public class MainActivity extends AppCompatActivity {
     public void searchLocation(View v) {
         Intent intent = new Intent(this, LocationSearchActivity.class);
         startActivityForResult(intent, LOCATION_ACTIVITY_REQUEST_CODE);
+    }
+
+    /**
+     * Search for photos in storage that match the lat and long.
+     * @param lat latitude of photo
+     * @param lng longitude of photo
+     * @return list of photos that match, or all photos if not
+     */
+    private ArrayList<String> findPhotosByLoc(Double lat, Double lng) {
+        File file = new File(Environment.getExternalStorageDirectory()
+                .getAbsolutePath(), "/Android/data/com.comp7082.photogallery/files/Pictures");
+        ArrayList<String> photos = new ArrayList<String>();
+        File[] fList = file.listFiles();
+
+        if (fList != null) {
+            for (File f : fList) {
+                // Check if photo's stored lat/long match the inputted lat/long
+                // if ((lat == null && lng == null) || (f.getLatitudeSomehow() == lat && f.getLongitudeSomehow == lng))
+                // i.e. if nothing matches, get all photos; OR get the photos that match BOTH lat && long
+                if (lat == null && lng == null)
+                    photos.add(f.getPath());
+            }
+        }
+        return photos;
     }
 }
