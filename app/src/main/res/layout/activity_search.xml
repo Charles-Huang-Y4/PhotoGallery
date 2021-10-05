@@ -26,10 +26,14 @@
         android:layout_alignBaseline="@+id/tvToDateTime" android:layout_alignParentEnd="true"
         android:layout_marginEnd="31dp" android:ems="10"
         android:textSize="24sp" />
+
     <TextView
-        android:id="@+id/tvKeywords" android:text="Keywords: "
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/tvFromDateTime" android:layout_centerVertical="true"
+        android:id="@+id/tvKeywords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tvFromDateTime"
+        android:layout_centerVertical="true"
+        android:text="Keywords: "
         android:textSize="24sp" />
     <EditText
         android:id="@+id/etKeywords" android:layout_width="wrap_content"
@@ -41,9 +45,14 @@
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" android:layout_marginRight="55dp"
         android:layout_marginEnd="55dp" />
+
     <Button
-        android:id="@+id/go"  android:onClick="go" android:text="Go"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true" android:layout_alignTop="@+id/btnCancel"
-        android:layout_marginEnd="128dp" />
+        android:id="@+id/go"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnCancel"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="128dp"
+        android:onClick="go"
+        android:text="Go" />
 </RelativeLayout>
