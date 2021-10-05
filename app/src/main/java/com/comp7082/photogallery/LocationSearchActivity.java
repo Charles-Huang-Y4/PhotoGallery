@@ -13,12 +13,19 @@ public class LocationSearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_search);
+
+        // Anything else to do here?
     }
 
     public void cancel(final View v) {
         finish();
     }
 
+    /**
+     * Take the user input for Latitude and Longitude and pass it back to MainActivity,
+     * where the photos that match the inputted lat & long will be displayed.
+     * @param v the view
+     */
     public void go(final View v) {
         Intent i = new Intent();
         EditText lat = (EditText) findViewById(R.id.etLatitude);

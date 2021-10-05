@@ -88,13 +88,23 @@
         android:id="@+id/btnSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/ivGallery"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_marginBottom="15dp"
         android:onClick="searchPhotos"
-        android:text="search"
+        android:text="Search Keyword"
         tools:layout_editor_absoluteX="291dp"
         tools:layout_editor_absoluteY="635dp" />
+
+    <Button
+        android:id="@+id/btnSearchLoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="162dp"
+        android:layout_marginBottom="15dp"
+        android:onClick="searchLocation"
+        android:text="Search Location" />
 
     <Button
         android:id="@+id/btnShare"
@@ -103,6 +113,6 @@
         android:layout_alignParentBottom="true"
         android:onClick="sharePhotos"
         android:text="share"
-        android:layout_marginLeft="140dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="15dp"/>
 </RelativeLayout>

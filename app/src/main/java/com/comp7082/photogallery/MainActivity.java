@@ -51,10 +51,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
+    private static final int LOCATION_ACTIVITY_REQUEST_CODE = 3;
     String mCurrentPhotoPath;
     private ArrayList<String> photos = null;
     private int index = 0;
-    private Uri photoURI;
     private FusedLocationProviderClient fusedLocationClient;
     private final int locationRequestCode = 1000;
     private double locLatitude;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this, "com.comp7082.photogallery.fileprovider", photoFile);
+                Uri photoURI = FileProvider.getUriForFile(this, "com.comp7082.photogallery.fileprovider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -107,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
         return photos;
     }
 
+    /**
+     * Launch "Search by Keyword" Activity.
+     * @param v the view
+     */
     public void searchPhotos(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
@@ -193,8 +197,20 @@ public class MainActivity extends AppCompatActivity {
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(photos.get(index));
         }
+
+        if (requestCode == LOCATION_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // display the photos that match the location???
+            }
+        }
     }
 
+    /**
+     * Update the photo's caption.
+     * @param path photo stored location
+     * @param caption the photo's description
+     * @param i index
+     */
     private void updatePhoto(String path, String caption, int i) {
         String[] attr = path.split("_");
         if (attr.length >= 3) {
@@ -269,7 +285,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Method when launching drawable within Glide
+    /**
+     * Method when launching drawable within Glide.
+     * @param bmp The bitmap
+     * @return bitmap Uri
+     */
     public Uri getBitmapFromDrawable(Bitmap bmp){
 
         // Store image to default external storage directory
@@ -290,5 +310,14 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return bmpUri;
+    }
+
+    /**
+     * Launch the "Search Photos by Location" activity.
+     * @param v the view
+     */
+    public void searchLocation(View v) {
+        Intent intent = new Intent(this, LocationSearchActivity.class);
+        startActivityForResult(intent, LOCATION_ACTIVITY_REQUEST_CODE);
     }
 }
