@@ -11,8 +11,17 @@ public class GalleryPresenter {
     public ArrayList<String> photos = null; // the photo array
     public int index = 0; // the index of the current displaying photo in array
 
-    public GalleryPresenter() {
+    private static GalleryPresenter gp;
+
+    private GalleryPresenter() {
         updatePhotoArray();
+    }
+
+    public static GalleryPresenter CreateInstance() {
+        if (gp == null) {
+            gp = new GalleryPresenter();
+        }
+        return gp;
     }
 
     // refresh the photo array with no search query

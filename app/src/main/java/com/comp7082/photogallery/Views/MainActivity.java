@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        gp = new GalleryPresenter();
+        gp = GalleryPresenter.CreateInstance();
         if (gp.getPhotosToDisplay() != null) {
             displayPhoto(gp.getPhotosToDisplay());
         }
