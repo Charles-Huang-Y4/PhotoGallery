@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class Photos {
 
+    // search the device for photos
     public static ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), "/Android/data/com.comp7082.photogallery/files/Pictures");
@@ -25,4 +26,6 @@ public class Photos {
         }
         return photos;
     }
+
+
 }

@@ -8,24 +8,25 @@ import java.util.Date;
 
 public class GalleryPresenter {
 
-    public ArrayList<String> photos = null;
-
+    public ArrayList<String> photos = null; // the photo array
     public int index = 0; // the index of the current displaying photo in array
 
     public GalleryPresenter() {
         updatePhotoArray();
     }
 
+    // refresh the photo array with no search query
     public void updatePhotoArray() {
         photos = Photos.findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
     }
 
+    // filter the photos in the array to time and keywords
     public void findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         photos = Photos.findPhotos(startTimestamp, endTimestamp, keywords);
     }
 
 
-    // returns the current photo to display
+    // returns the current photo in array to display on screen
     public String getPhotosToDisplay() {
         if (photos.size() == 0) {
             return null;
@@ -46,6 +47,7 @@ public class GalleryPresenter {
         }
     }
 
+    // returns the index of the image in the array, else return -1
     public int searchPhotoArray(String imageString) {
         for (int i = 0; i < photos.size(); i++) {
             if (photos.get(i).equals(imageString)) {
@@ -55,6 +57,7 @@ public class GalleryPresenter {
         return -1;
     }
 
+    // updating the caption on a photo in the array
     public void updatePhoto(String path, String caption, int i) {
         String[] attr = path.split("_");
         if (attr.length >= 3) {

@@ -4,11 +4,8 @@ import androidx.appcompat.app.AppCompatActivity; import androidx.core.content.Fi
 import android.content.Intent; import android.graphics.BitmapFactory;
 import android.net.Uri; import android.os.Bundle; import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View; import android.widget.EditText;
-import android.widget.Gallery;
 import android.widget.ImageView; import android.widget.TextView;
 
 import com.comp7082.photogallery.Presenters.GalleryPresenter;
@@ -17,9 +14,8 @@ import com.comp7082.photogallery.R;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat; import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -62,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void scrollPhotos(View v) {
-        gp.updatePhoto(gp.photos.get(gp.index), ((EditText) findViewById(R.id.etCaption)).getText().toString(), gp.index);
+        gp.updatePhoto(gp.photos.get(gp.index),
+                ((EditText) findViewById(R.id.etCaption)).getText().toString(), gp.index);
         switch (v.getId()) {
             case R.id.btnPrev:
                 gp.decrementIndex();
@@ -74,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         displayPhoto(gp.getPhotosToDisplay());
+    }
+
+    public void searchPhotos(View v) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
     // Taking Photos
@@ -151,11 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    public void searchPhotos(View v) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
 }
