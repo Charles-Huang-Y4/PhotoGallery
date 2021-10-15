@@ -21,10 +21,10 @@
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SearchActivity"
+            android:name=".Views.SearchActivity"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Views.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

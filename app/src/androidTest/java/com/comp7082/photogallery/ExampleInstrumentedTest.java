@@ -21,6 +21,8 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
+import com.comp7082.photogallery.Views.MainActivity;
+
 /**
  * Instrumented test, which will execute on an Android device.
  *

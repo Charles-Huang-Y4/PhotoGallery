@@ -1,9 +1,12 @@
-package com.comp7082.photogallery;
+package com.comp7082.photogallery.Views;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent; import android.os.Bundle;
 import android.util.Log;
 import android.view.View; import android.widget.EditText;
+
+import com.comp7082.photogallery.R;
+
 import java.text.DateFormat; import java.text.SimpleDateFormat;
 import java.util.Calendar; import java.util.Date;
 import java.util.Locale;
