@@ -2,6 +2,7 @@ package com.comp7082.photogallery.Views;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView iv = findViewById(R.id.ivGallery);
         TextView tvTimestamp = findViewById(R.id.tvTimestamp);
         TextView tvLocation = findViewById(R.id.tvPhotoLocation);
+        TextView tvPhotoID = findViewById(R.id.tvPhotoID);
         EditText etCaption = findViewById(R.id.etCaption);
 
         if (path == null || path.equals("")) {
@@ -63,17 +65,27 @@ public class MainActivity extends AppCompatActivity {
             etCaption.setText("");
             tvTimestamp.setText("");
             tvLocation.setText("");
+            tvPhotoID.setText("");
         } else {
             iv.setImageBitmap(BitmapFactory.decodeFile(path));
             String[] attr = path.split("_");
+            String photoID = "ID: " + attr[2] + attr[3];
 
             etCaption.setText(attr[1]);
-            tvTimestamp.setText(attr[2]);
+
+            if(attr[2].length() != 8){
+                Log.e("Date Error","Given date string is not length 8");
+            } else {
+                String formattedDate = "Date: " + attr[2].substring(6,8) + "/" + attr[2].substring(4,6) + "/" + attr[2].substring(0,4);
+                tvTimestamp.setText(formattedDate);
+            }
 
             if (attr.length >= 6) {
-                String loc = "Lat., Lng: " + attr[4] + ", " + attr[5];
+                String loc = "Lat, Lng: " + attr[4] + ", " + attr[5];
                 tvLocation.setText(loc);
             }
+
+            tvPhotoID.setText(photoID);
         }
     }
 
@@ -133,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpeg",storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
-
         return image;
     }
 
