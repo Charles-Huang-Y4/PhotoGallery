@@ -79,7 +79,7 @@
         android:layout_alignBaseline="@id/tvLatitude"
         android:layout_alignParentEnd="true"
         android:ems="10"
-        android:inputType="numberDecimal"
+        android:inputType="numberDecimal|numberSigned"
         android:textSize="24sp" />
     <TextView
         android:id="@+id/tvLongitude"
@@ -92,12 +92,12 @@
 
     <EditText
         android:id="@+id/etLongitude"
-        android:inputType="numberDecimal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignBaseline="@id/tvLongitude"
+        android:layout_alignParentEnd="true"
         android:ems="10"
+        android:inputType="numberDecimal|numberSigned"
         android:textSize="24sp" />
 
     <Button
