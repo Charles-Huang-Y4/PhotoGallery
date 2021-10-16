@@ -1,7 +1,15 @@
 package com.comp7082.photogallery.Views;
 
-import androidx.appcompat.app.AppCompatActivity; import androidx.core.content.FileProvider;
-import android.content.Intent; import android.graphics.BitmapFactory;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri; import android.os.Bundle; import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -10,6 +18,9 @@ import android.widget.ImageView; import android.widget.TextView;
 
 import com.comp7082.photogallery.Presenters.GalleryPresenter;
 import com.comp7082.photogallery.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private GalleryPresenter gp;
     private String newPhotoString;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private String locLatitude;
+    private String locLongitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
         if (gp.getPhotosToDisplay() != null) {
             displayPhoto(gp.getPhotosToDisplay());
         }
-
-        EditText et = (EditText) findViewById(R.id.etCaption);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        getLocation();
     }
 
     private void displayPhoto(String path) {
@@ -57,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void scrollPhotos(View v) {
+    public void scrollPhotos(View v) throws IOException {
         gp.updatePhoto(gp.photos.get(gp.index),
                 ((EditText) findViewById(R.id.etCaption)).getText().toString(), gp.index);
         switch (v.getId()) {
@@ -78,6 +93,34 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Get the user's location. If permission is not granted initially, try requesting it.
+     */
+    private void getLocation() {
+        // Permissions denied
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permissions
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
+        // Get location
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location != null) {
+                locLatitude = String.valueOf(location.getLatitude());
+                locLatitude = locLatitude.substring(0,Math.min(locLatitude.length(),6));
+
+                locLongitude = String.valueOf(location.getLongitude());
+                locLongitude = locLongitude.substring(0,Math.min(locLongitude.length(),6));
+
+            }
+        });
+
+    }
+
     // Taking Photos
     public void takePhoto(View v) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -94,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 newPhotoString = String.valueOf(photoFile);
+
             }
 
         }
@@ -102,10 +146,11 @@ public class MainActivity extends AppCompatActivity {
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new android.icu.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "_caption_" + timeStamp + "_";
+        String imageFileName = "_caption_" + timeStamp + "_" + locLongitude + "_" + locLatitude + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg",storageDir);
+        File image = File.createTempFile(imageFileName, ".jpeg",storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
+        Log.d("sendhelp", mCurrentPhotoPath);
         return image;
     }
 

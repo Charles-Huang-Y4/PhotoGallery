@@ -34,7 +34,6 @@ public class GalleryPresenter {
         photos = Photos.findPhotos(startTimestamp, endTimestamp, keywords);
     }
 
-
     // returns the current photo in array to display on screen
     public String getPhotosToDisplay() {
         if (photos.size() == 0) {
@@ -79,7 +78,5 @@ public class GalleryPresenter {
 
         }
     }
-
-
 
 }
