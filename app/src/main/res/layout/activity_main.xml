@@ -7,6 +7,29 @@
     android:layout_height="fill_parent"
     tools:context=".Views.MainActivity">
 
+    <LinearLayout
+        android:id="@+id/photoInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/etCaption"
+        android:layout_alignStart="@id/etCaption"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/tvTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginEnd="20dp"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/tvPhotoLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/ivGallery"
         android:layout_width="356dp"
@@ -20,39 +43,34 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/ivGallery"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:inputType="textPersonName"
         android:text="" />
 
     <LinearLayout
-        android:id="@+id/photoInfo"
+        android:id="@+id/photoID"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_below="@id/etCaption"
         android:layout_alignStart="@id/etCaption"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="40dp">
 
         <TextView
-            android:id="@+id/tvTimestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginEnd="20dp"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/tvPhotoLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"/>
-
+            android:id="@+id/tvPhotoID"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/photoButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="20dp"
+        android:layout_below="@id/photoID"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/photoInfo">
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="20dp">
 
         <Button
             android:id="@+id/btnPrev"
@@ -90,8 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:text="upload"
-            />
+            android:text="upload" />
 
         <Button
             android:id="@+id/btnSearch"
