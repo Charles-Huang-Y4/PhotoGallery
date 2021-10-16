@@ -1,14 +1,19 @@
 package com.comp7082.photogallery.Views;
 
-import androidx.appcompat.app.AppCompatActivity;
-import android.content.Intent; import android.os.Bundle;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.View; import android.widget.EditText;
+import android.view.View;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.comp7082.photogallery.R;
 
-import java.text.DateFormat; import java.text.SimpleDateFormat;
-import java.util.Calendar; import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
@@ -30,7 +35,9 @@ public class SearchActivity extends AppCompatActivity {
                     "yyyy‐MM‐dd HH:mm:ss", Locale.getDefault()).format(today));
             ((EditText) findViewById(R.id.etToDateTime)).setText(new SimpleDateFormat(
                     "yyyy‐MM‐dd HH:mm:ss", Locale.getDefault()).format(tomorrow));
-        } catch (Exception ex) { }
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.getMessage());
+        }
     }
 
     public void cancel(final View v) {
@@ -39,12 +46,19 @@ public class SearchActivity extends AppCompatActivity {
 
     public void go(final View v) {
         Intent i = new Intent();
-        EditText from = (EditText) findViewById(R.id.etFromDateTime);
-        EditText to = (EditText) findViewById(R.id.etToDateTime);
-        EditText keywords = (EditText) findViewById(R.id.etKeywords);
+
+        EditText from = findViewById(R.id.etFromDateTime);
+        EditText to = findViewById(R.id.etToDateTime);
+        EditText keywords = findViewById(R.id.etKeywords);
+        EditText lat = findViewById(R.id.etLatitude);
+        EditText lng = findViewById(R.id.etLongitude);
+
         i.putExtra("STARTTIMESTAMP", from.getText() != null ? from.getText().toString() : "");
         i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
         i.putExtra("KEYWORDS", keywords.getText() != null ? keywords.getText().toString() : "");
+        i.putExtra("LATITUDE", lat.getText() != null ? lat.getText().toString() : "");
+        i.putExtra("LONGITUDE", lng.getText() != null ? lng.getText().toString() : "");
+
         setResult(RESULT_OK, i);
         finish();
     }

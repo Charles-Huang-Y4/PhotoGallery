@@ -9,6 +9,9 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+/**
+ * Facade class to use when getting location.
+ */
 public class LocationTagger {
     private final Activity activity;
     private final FusedLocationProviderClient fusedLocationClient;
@@ -25,7 +28,7 @@ public class LocationTagger {
     /**
      * Get the user's location. If permission is not granted initially, try requesting it.
      */
-    private void getLocation() {
+    public void getLocation() {
         // Permissions denied
         if (ActivityCompat.checkSelfPermission(activity,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -43,7 +46,6 @@ public class LocationTagger {
 
                 longitude = String.valueOf(location.getLongitude());
                 longitude = longitude.substring(0,Math.min(longitude.length(),6));
-
             }
         });
     }

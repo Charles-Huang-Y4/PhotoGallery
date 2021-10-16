@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,26 +49,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayPhoto(String path) {
-        ImageView iv = (ImageView) findViewById(R.id.ivGallery);
-        TextView tv = (TextView) findViewById(R.id.tvTimestamp);
-        EditText et = (EditText) findViewById(R.id.etCaption);
+        ImageView iv = findViewById(R.id.ivGallery);
+        TextView tvTimestamp = findViewById(R.id.tvTimestamp);
+        TextView tvLocation = findViewById(R.id.tvPhotoLocation);
+        EditText etCaption = findViewById(R.id.etCaption);
 
         if (path == null || path.equals("")) {
             iv.setImageResource(R.mipmap.ic_launcher);
-            et.setText("");
-            tv.setText("");
+            etCaption.setText("");
+            tvTimestamp.setText("");
+            tvLocation.setText("");
         } else {
             iv.setImageBitmap(BitmapFactory.decodeFile(path));
             String[] attr = path.split("_");
 
-            et.setText(attr[1]);
-            tv.setText(attr[2]);
+            etCaption.setText(attr[1]);
+            tvTimestamp.setText(attr[2]);
+
+            if (attr.length >= 6) {
+                String loc = "Lat., Lng: " + attr[4] + ", " + attr[5];
+                tvLocation.setText(loc);
+            }
         }
     }
 
     public void scrollPhotos(View v) throws IOException {
-        gp.updatePhoto(gp.photos.get(gp.index),
-                ((EditText) findViewById(R.id.etCaption)).getText().toString(), gp.index);
+        String caption = ((EditText) findViewById(R.id.etCaption)).getText().toString();
+
+        gp.updatePhoto(gp.photos.get(gp.index), caption, gp.index);
+
         switch (v.getId()) {
             case R.id.btnPrev:
                 gp.decrementIndex();
@@ -111,11 +119,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File createImageFile() throws IOException {
+        locTagger.getLocation();
+
         // Create an image file name
         String timeStamp = new android.icu.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "_caption_" + timeStamp + "_" +
                 locTagger.getLatitude() + "_" + locTagger.getLongitude() + "_";
-        Log.d("location", imageFileName);
+
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpeg",storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -133,18 +143,21 @@ public class MainActivity extends AppCompatActivity {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date startTimestamp , endTimestamp;
                 try {
-                    String from = (String) data.getStringExtra("STARTTIMESTAMP");
-                    String to = (String) data.getStringExtra("ENDTIMESTAMP");
+                    String from = data.getStringExtra("STARTTIMESTAMP");
+                    String to = data.getStringExtra("ENDTIMESTAMP");
                     startTimestamp = format.parse(from);
                     endTimestamp = format.parse(to);
+
                 } catch (Exception ex) {
                     startTimestamp = null;
                     endTimestamp = null;
                 }
-                String keywords = (String) data.getStringExtra("KEYWORDS");
+                String keywords = data.getStringExtra("KEYWORDS");
+                String lat = data.getStringExtra("LATITUDE");
+                String lng = data.getStringExtra("LONGITUDE");
 
                 gp.index = 0;
-                gp.findPhotos(startTimestamp, endTimestamp, keywords);
+                gp.findPhotos(startTimestamp, endTimestamp, keywords, lat, lng);
 
                 if (gp.photos.size() == 0) {
                     displayPhoto(null);
@@ -154,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
+            ImageView mImageView = findViewById(R.id.ivGallery);
 
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
             gp.updatePhotoArray();
