@@ -1,11 +1,14 @@
 package com.comp7082.photogallery.Views;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +22,7 @@ import com.comp7082.photogallery.Presenters.LocationTagger;
 import com.comp7082.photogallery.R;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -180,6 +184,57 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public void sharePhotos(View view) {
+        // remove restrictions
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
+        // test
+        ImageView ivImage = (ImageView) findViewById(R.id.ivGallery);
+        // Get access to the URI for the bitmap
+        ivImage.buildDrawingCache();
+        Bitmap bitmap = ivImage.getDrawingCache();
+        Uri bmpUri = getBitmapFromDrawable(bitmap);
+        if (bmpUri != null) {
+            // Construct a ShareIntent with link to image
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            shareIntent.setType("image/*");
+            // Launch sharing dialog for image
+            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        } else {
+            Log.e("Failure", "Attempt to share photo failed.");
+        }
+    }
+
+    /**
+     * Method when launching drawable within Glide.
+     * @param bmp The bitmap
+     * @return bitmap Uri
+     */
+    public Uri getBitmapFromDrawable(Bitmap bmp) {
+
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            // Use methods on Context to access package-specific directories on external storage.
+            // This way, you don't need to request external read/write permission.
+            // See https://youtu.be/5xVh-7ywKpE?t=25m25s
+            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+
+            bmpUri = Uri.fromFile(file);
+            // **Note:** For API < 24, you may use bmpUri = Uri.fromFile(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 
 }
