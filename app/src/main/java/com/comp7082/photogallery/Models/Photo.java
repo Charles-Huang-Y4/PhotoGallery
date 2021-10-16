@@ -8,6 +8,15 @@ public class Photo {
     private String caption;
     private boolean shared;
 
+    public Photo() {
+        path = "";
+        lat = "";
+        lng = "";
+        date = "";
+        caption = "";
+        shared = false;
+    }
+
     public String getPath() {
         return path;
     }
@@ -52,8 +61,8 @@ public class Photo {
         return shared;
     }
 
-    public void setShared(boolean shared) {
-        this.shared = shared;
+    public void setSharedTrue() {
+        this.shared = true;
     }
 
 

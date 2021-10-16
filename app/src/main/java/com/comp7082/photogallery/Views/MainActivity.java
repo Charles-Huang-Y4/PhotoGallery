@@ -11,6 +11,7 @@ import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.comp7082.photogallery.Models.Photo;
 import com.comp7082.photogallery.Presenters.GalleryPresenter;
 import com.comp7082.photogallery.Presenters.LocationTagger;
 import com.comp7082.photogallery.R;
@@ -28,17 +30,20 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
 
+    Photo currentPhoto;
     String mCurrentPhotoPath;
 
     private GalleryPresenter gp;
     private String newPhotoString;
 
     private LocationTagger locTagger;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         locTagger = new LocationTagger(this);
+        currentPhoto = new Photo();
     }
 
     private void displayPhoto(String path) {
@@ -90,21 +96,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void scrollPhotos(View v) throws IOException {
-        String caption = ((EditText) findViewById(R.id.etCaption)).getText().toString();
-
-        gp.updatePhoto(gp.photos.get(gp.index), caption, gp.index);
-
-        switch (v.getId()) {
-            case R.id.btnPrev:
-                gp.decrementIndex();
-                break;
-            case R.id.btnNext:
-                gp.incrementIndex();
-                break;
-            default:
-                break;
+        try {
+            String caption = ((EditText) findViewById(R.id.etCaption)).getText().toString();
+            gp.updatePhoto(gp.photos.get(gp.index), caption, gp.index);
+            // TODO: NOT SURE WHY CURRENTPHOTO CONDITION ISN'T WORKING
+//            if (!currentPhoto.isShared()) {
+//                Button shareBtn = (Button) findViewById(R.id.btnUpload);
+//                shareBtn.setEnabled(true);
+//            }
+            Button shareBtn = (Button) findViewById(R.id.btnUpload);
+            shareBtn.setEnabled(true);
+            switch (v.getId()) {
+                case R.id.btnPrev:
+                    gp.decrementIndex();
+                    break;
+                case R.id.btnNext:
+                    gp.incrementIndex();
+                    break;
+                default:
+                    break;
+            }
+            displayPhoto(gp.getPhotosToDisplay());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        displayPhoto(gp.getPhotosToDisplay());
+
     }
 
     public void searchPhotos(View v) {
@@ -198,11 +214,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sharePhotos(View view) {
+        currentPhoto.setSharedTrue();
+
+        // TODO: NOT SURE WHY CURRENTPHOTO CONDITION ISN'T WORKING
+//        if (currentPhoto.isShared()) {
+//            Button shareBtn = (Button) findViewById(R.id.btnUpload);
+//            shareBtn.setEnabled(false);
+//        }
+        Button shareBtn = (Button) findViewById(R.id.btnUpload);
+        shareBtn.setEnabled(false);
         // remove restrictions
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
-        // test
         ImageView ivImage = (ImageView) findViewById(R.id.ivGallery);
         // Get access to the URI for the bitmap
         ivImage.buildDrawingCache();
@@ -234,7 +258,8 @@ public class MainActivity extends AppCompatActivity {
             // Use methods on Context to access package-specific directories on external storage.
             // This way, you don't need to request external read/write permission.
             // See https://youtu.be/5xVh-7ywKpE?t=25m25s
-            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            // File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "temp_file.jpg");
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();

@@ -1,5 +1,7 @@
 package com.comp7082.photogallery.Presenters;
 
+import android.util.Log;
+
 import com.comp7082.photogallery.Models.Photos;
 
 import java.io.File;
