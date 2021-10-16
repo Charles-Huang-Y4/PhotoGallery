@@ -26,12 +26,13 @@ public class GalleryPresenter {
 
     // refresh the photo array with no search query
     public void updatePhotoArray() {
-        photos = Photos.findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
+        photos = Photos.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "", "");
     }
 
     // filter the photos in the array to time and keywords
-    public void findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
-        photos = Photos.findPhotos(startTimestamp, endTimestamp, keywords);
+    public void findPhotos(Date startTimestamp, Date endTimestamp, String keywords,
+                           String lat, String lng) {
+        photos = Photos.findPhotos(startTimestamp, endTimestamp, keywords, lat, lng);
     }
 
     // returns the current photo in array to display on screen
@@ -69,7 +70,9 @@ public class GalleryPresenter {
     public void updatePhoto(String path, String caption, int i) {
         String[] attr = path.split("_");
         if (attr.length >= 3) {
-            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_";
+            String newName = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" +
+                    attr[4] + "_" + attr[5] + "_";
+
             File to = new File(newName);
             File from = new File(path);
             if (from.renameTo(to)) {
