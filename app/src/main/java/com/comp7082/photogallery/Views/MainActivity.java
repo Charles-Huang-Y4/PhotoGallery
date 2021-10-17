@@ -31,7 +31,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -103,11 +102,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             String caption = ((EditText) findViewById(R.id.etCaption)).getText().toString();
             gp.updatePhoto(gp.photos.get(gp.index), caption, gp.index);
-            // TODO: NOT SURE WHY CURRENTPHOTO CONDITION ISN'T WORKING
-//            if (!currentPhoto.isShared()) {
-//                Button shareBtn = (Button) findViewById(R.id.btnUpload);
-//                shareBtn.setEnabled(true);
-//            }
             Button shareBtn = (Button) findViewById(R.id.btnUpload);
             shareBtn.setEnabled(true);
             switch (v.getId()) {
@@ -219,12 +213,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void sharePhotos(View view) {
         currentPhoto.setSharedTrue();
-
-        // TODO: NOT SURE WHY CURRENTPHOTO CONDITION ISN'T WORKING
-//        if (currentPhoto.isShared()) {
-//            Button shareBtn = (Button) findViewById(R.id.btnUpload);
-//            shareBtn.setEnabled(false);
-//        }
         Button shareBtn = (Button) findViewById(R.id.btnUpload);
         shareBtn.setEnabled(false);
         // remove restrictions

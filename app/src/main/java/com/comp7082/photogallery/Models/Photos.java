@@ -1,10 +1,15 @@
 package com.comp7082.photogallery.Models;
 
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class Photos {
 
@@ -19,10 +24,12 @@ public class Photos {
 
         if (fList != null) {
             for (File f : fList) {
+                Log.e("File", f.toString());
                 if (isValidDate(f, startTimestamp, endTimestamp) && isValidKeyword(f, keywords) &&
                     isValidLocation(f, lat, lng))
                     photos.add(f.getPath());
             }
+
         }
         return photos;
     }
