@@ -86,12 +86,15 @@ public class MainActivity extends AppCompatActivity {
                 String formattedDate = "Date: " + attr[2].substring(6,8) + "/" + attr[2].substring(4,6) + "/" + attr[2].substring(0,4);
                 tvTimestamp.setText(formattedDate);
             }
-
             if (attr.length >= 6) {
-                String loc = "Lat, Lng: " + attr[4] + ", " + attr[5];
+                String loc;
+                if (attr[4].equals("null") || attr[5].equals("null")){
+                    loc = "Lat, Lng: " + locTagger.getLatitude() + ", " + locTagger.getLongitude();
+                } else {
+                    loc = "Lat, Lng: " + attr[4] + ", " + attr[5];
+                }
                 tvLocation.setText(loc);
             }
-
             tvPhotoID.setText(photoID);
         }
     }
@@ -145,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 newPhotoString = String.valueOf(photoFile);
-
             }
 
         }
@@ -209,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                     displayPhoto(null);
                 } else {
                     displayPhoto(gp.photos.get(gp.index));
+
                 }
             }
         }
