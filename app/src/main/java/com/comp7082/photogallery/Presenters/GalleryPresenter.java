@@ -80,7 +80,6 @@ public class GalleryPresenter {
             if (from.renameTo(to)) {
                 photos.set(i, newName);
             }
-
         }
     }
 
