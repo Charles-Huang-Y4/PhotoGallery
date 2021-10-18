@@ -2,6 +2,7 @@ package com.comp7082.photogallery.Models;
 
 import android.os.Environment;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import java.io.File;
 import java.sql.Array;
@@ -21,6 +22,11 @@ public class Photos {
 
         ArrayList<String> photos = new ArrayList<String>();
         File[] fList = file.listFiles();
+        ArrayList<File> fileArray = new ArrayList<>();
+
+        fileArray.stream().filter(f -> isValidDate(f, startTimestamp, endTimestamp) &&
+                isValidKeyword(f, keywords) &&
+                isValidLocation(f, lat, lng));
 
         if (fList != null) {
             for (File f : fList) {
