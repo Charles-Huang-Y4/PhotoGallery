@@ -92,9 +92,8 @@ public class ExampleInstrumentedTest {
     // This doesn't work until a photo with the word caption is in the list of photos
     public void useSearchForCaptionImage(){
         onView(withId(R.id.snap)).perform(click());
-        device.findObject(By.res("com.android.camera2:id/shutter_button")
-                .desc("Shutter").clazz("android.widget.ImageView").text(Pattern.compile(""))
-                .pkg("com.android.camera2")).clickAndWait(Until.newWindow(), 1000);
+        device.findObject(By.res("com.android.camera2:id/shutter_button"))
+                .clickAndWait(Until.newWindow(), 1000);
         device.findObject(By.res("com.android.camera2:id/done_button"))
                 .clickAndWait(Until.newWindow(), 1000);
         onView(withId(R.id.etCaption)).check(matches(withText("caption")));
