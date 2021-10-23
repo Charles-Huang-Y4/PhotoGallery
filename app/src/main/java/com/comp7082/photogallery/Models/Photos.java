@@ -2,15 +2,11 @@ package com.comp7082.photogallery.Models;
 
 import android.os.Environment;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import java.io.File;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.Objects;
 
 public class Photos {
 
@@ -20,7 +16,7 @@ public class Photos {
         File file = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), "/Android/data/com.comp7082.photogallery/files/Pictures");
 
-        ArrayList<String> photos = new ArrayList<String>();
+        ArrayList<String> photos = new ArrayList<>();
         File[] fList = file.listFiles();
         ArrayList<File> fileArray = new ArrayList<>();
 
@@ -41,9 +37,9 @@ public class Photos {
     }
 
     // check if the start and end dates are both empty or both valid dates.
-    private static boolean isValidDate(File f, Date startTimestamp, Date endTimestamp) {
+    private static boolean isValidDate(File f, Date startTimestamp, Date endTimestamp) throws NullPointerException {
         return (startTimestamp == null && endTimestamp == null) ||
-                (f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime());
+                (f.lastModified() >= Objects.requireNonNull(startTimestamp).getTime() && f.lastModified() <= endTimestamp.getTime());
     }
 
     // check if the file contains the keywords or was left empty.

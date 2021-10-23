@@ -24,7 +24,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         try {
             Calendar calendar = Calendar.getInstance();
-            DateFormat format = new SimpleDateFormat("yyyy‐MM‐dd");
+            DateFormat format = new SimpleDateFormat("yyyy‐MM‐dd", Locale.getDefault());
             Date now = calendar.getTime();
             String todayStr = new SimpleDateFormat("yyyy‐MM‐dd", Locale.getDefault()).format(now);
             Date today = format.parse((String) todayStr);

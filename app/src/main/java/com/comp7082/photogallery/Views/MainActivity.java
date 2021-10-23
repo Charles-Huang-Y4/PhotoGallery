@@ -2,7 +2,6 @@ package com.comp7082.photogallery.Views;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +29,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Stack;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -98,17 +97,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void scrollPhotos(View v) throws IOException {
+    public void scrollPhotos(View v) {
+        final int prev = R.id.btnPrev;
+        final int next = R.id.btnNext;
         try {
             String caption = ((EditText) findViewById(R.id.etCaption)).getText().toString();
             gp.updatePhoto(gp.photos.get(gp.index), caption, gp.index);
             Button shareBtn = (Button) findViewById(R.id.btnUpload);
             shareBtn.setEnabled(true);
             switch (v.getId()) {
-                case R.id.btnPrev:
+                case prev:
                     gp.decrementIndex();
                     break;
-                case R.id.btnNext:
+                case next:
                     gp.incrementIndex();
                     break;
                 default:
@@ -121,13 +122,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void searchPhotos(View v) {
+    public void searchPhotos() {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
     // Taking Photos
-    public void takePhoto(View v) {
+    public void takePhoto() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         locTagger.getLocation();
 
         // Create an image file name
-        String timeStamp = new android.icu.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new android.icu.text.SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "_caption_" + timeStamp + "_" +
                 locTagger.getLatitude() + "_" + locTagger.getLongitude() + "_";
 
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         // when searching
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                 Date startTimestamp , endTimestamp;
                 try {
                     String from = data.getStringExtra("STARTTIMESTAMP");
@@ -211,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sharePhotos(View view) {
+    public void sharePhotos() {
         currentPhoto.setSharedTrue();
         Button shareBtn = (Button) findViewById(R.id.btnUpload);
         shareBtn.setEnabled(false);
