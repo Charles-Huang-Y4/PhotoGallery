@@ -122,13 +122,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void searchPhotos() {
+    public void searchPhotos(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
     // Taking Photos
-    public void takePhoto() {
+    public void takePhoto(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sharePhotos() {
+    public void sharePhotos(View view) {
         currentPhoto.setSharedTrue();
         Button shareBtn = (Button) findViewById(R.id.btnUpload);
         shareBtn.setEnabled(false);
