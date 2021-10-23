@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">PhotoGallery</string>
+    <string name="ivGalleryDesc">Captured Image</string>
+    <string name="etCaption">Caption</string>
+    <string name="prevButtLabel">prev</string>
+    <string name="takePicLabel">snap</string>
+    <string name="nextButtLabel">next</string>
+    <string name="uploadButtLabel">upload</string>
+    <string name="searchButtLabel">search</string>
 </resources>
