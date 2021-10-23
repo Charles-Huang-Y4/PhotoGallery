@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Views.SearchActivity">
+
     <TextView
         android:id="@+id/tvFromDateTime"
-        android:text="From: "
-        android:layout_width="wrap_content"
+        android:text="@string/fromDateLabel"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
         android:layout_alignBottom="@+id/etFromDateTime"
         android:textSize="24sp" />
+
     <EditText
         android:id="@+id/etFromDateTime"
         android:inputType="date"
@@ -21,14 +23,19 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="38dp"
         android:ems="10"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:layout_toEndOf="@id/tvFromDateTime"
+        android:autofillHints="Beginning Date"
+        android:hint="@string/etFromDateHint"/>
+
     <TextView
         android:id="@+id/tvToDateTime"
-        android:text="To: "
+        android:text="@string/toDateLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/tvFromDateTime"
+
         android:layout_marginTop="98dp"
         android:textSize="24sp" />
 
@@ -41,11 +48,13 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="100dp"
         android:ems="10"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:autofillHints="End Date"
+        android:hint="@string/etToDateHint"/>
 
     <TextView
         android:id="@+id/tvKeywords"
-        android:text="Keywords: "
+        android:text="@string/keywordsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvFromDateTime"
@@ -60,7 +69,10 @@
         android:layout_alignBaseline="@id/tvKeywords"
         android:layout_marginBottom="100dp"
         android:ems="10"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:autofillHints="Text"
+        android:inputType="text"
+        android:hint="@string/keywordsHint"/>
 
 <!-- /////////////// Latitude and Longitude Input ////////////////// -->
 
@@ -69,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/etKeywords"
-        android:text="Latitude: "
+        android:text="@string/latitudeLabel"
         android:textSize="24sp" />
 
     <EditText
@@ -80,10 +92,12 @@
         android:layout_alignParentEnd="true"
         android:ems="10"
         android:inputType="numberDecimal|numberSigned"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:autofillHints="Latitude in Decimals"
+        android:hint="@string/imgLatHint"/>
     <TextView
         android:id="@+id/tvLongitude"
-        android:text="Longitude: "
+        android:text="@string/longitudeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvFromDateTime"
@@ -96,26 +110,30 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/tvLongitude"
         android:layout_alignParentEnd="true"
+        android:autofillHints="Longitude in Decimals"
         android:ems="10"
+        android:hint="@string/imgLngHint"
         android:inputType="numberDecimal|numberSigned"
         android:textSize="24sp" />
 
     <Button
         android:id="@+id/btnCancel"
-        android:text="Cancel"
+        android:text="@string/cancelButtLabel"
         android:onClick="cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:layout_marginStart="50dp" />
+
     <Button
         android:id="@+id/go"
         android:onClick="go"
-        android:text="Go"
+        android:text="@string/goButtLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/btnCancel"
+        android:layout_toEndOf="@id/btnCancel"
         android:layout_marginEnd="50dp" />
 </RelativeLayout>
