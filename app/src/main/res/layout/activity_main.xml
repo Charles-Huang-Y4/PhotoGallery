@@ -5,7 +5,8 @@
     android:id="@+id/relativeLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context=".Views.MainActivity">
+    tools:context=".Views.MainActivity"
+    style="@style/Theme.PhotoGallery">
 
     <LinearLayout
         android:id="@+id/photoInfo"
@@ -131,5 +132,4 @@
             style="?android:buttonBarButtonStyle"/>
 
     </LinearLayout>
-
 </RelativeLayout>
